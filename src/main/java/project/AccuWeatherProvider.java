@@ -1,5 +1,8 @@
 package project;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -8,6 +11,9 @@ import okhttp3.Response;
 import project.enums.Periods;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AccuWeatherProvider implements WeatherProvider {
 
@@ -60,6 +66,8 @@ public class AccuWeatherProvider implements WeatherProvider {
                     .addPathSegment("5day")
                     .addPathSegment(cityKey)
                     .addQueryParameter("apikey", API_KEY)
+                    .addQueryParameter("language", LANGUAGE)
+                    .addQueryParameter("metric", "true")
                     .build();
 
             Request request = new Request.Builder()
@@ -68,8 +76,37 @@ public class AccuWeatherProvider implements WeatherProvider {
                     .build();
 
             Response response = client.newCall(request).execute();
-            System.out.println(response.body().string());
+            printForecastResults(response.body().string());
         }
+    }
+
+    private void printForecastResults(String jsonString) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        JsonNode forecasts = objectMapper.readTree(jsonString).at("/DailyForecasts");
+        String city = ApplicationGlobalState.getInstance().getSelectedCity();
+
+        SimpleDateFormat outFormat = new SimpleDateFormat("dd.MM.YYYY");
+
+        for (JsonNode item : forecasts) {
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(item.at("/Date").asText());
+
+                String weatherText = item.at("/Day/IconPhrase").asText();
+                Double temperature = item.at("/Temperature/Maximum/Value").asDouble();
+                String unit = item.at("/Temperature/Maximum/Unit").asText();
+
+                System.out.println(
+                        "В городе " + city +
+                                " на дату " + outFormat.format(date) +
+                                " ожидается " + weatherText +
+                                ", температура - " + temperature + unit
+                );
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public String detectCityKey() throws IOException {
