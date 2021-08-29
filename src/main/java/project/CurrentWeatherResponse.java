@@ -10,7 +10,10 @@ public class CurrentWeatherResponse {
     @JsonProperty(value = "WeatherText")
     private String weatherText;
 
-    private Float temperature;
+    @JsonProperty(value = "LocalObservationDateTime")
+    private String localDate;
+
+    private Double temperature;
     private String unit;
 
     @JsonProperty("Temperature")
@@ -20,23 +23,32 @@ public class CurrentWeatherResponse {
         unit = temperatureObject.getUnit();
     }
 
-    public void setTemperature(Float temperature) {
-        this.temperature = temperature;
-    }
-
-    public Float getTemperature() {
+    public Double getTemperature() {
         return temperature;
     }
 
-    public void setWeatherText(String weatherText) {
-        this.weatherText = weatherText;
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
     }
 
     public String getWeatherText() {
         return weatherText;
     }
 
-    public String toString() {
-        return weatherText + ", " + Float.toString(temperature) + unit;
+    public void setWeatherText(String weatherText) {
+        this.weatherText = weatherText;
     }
+
+    public String getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(String localDate) {
+        this.localDate = localDate;
+    }
+
+    public String toString() {
+        return weatherText + ", " + temperature + unit;
+    }
+
 }

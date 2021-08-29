@@ -26,10 +26,17 @@ public class AccuWeatherProvider implements WeatherProvider {
 
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private Repository repository;
+
+    public AccuWeatherProvider(Repository repository) {
+        this.repository = repository;
+    }
+
 
     @Override
     public void getWeather(Periods periods) throws IOException {
         String cityKey = detectCityKey();
+        String city = ApplicationGlobalState.getInstance().getSelectedCity();
 
         if (periods.equals(Periods.NOW)) {
             HttpUrl url = new HttpUrl.Builder()
@@ -55,6 +62,7 @@ public class AccuWeatherProvider implements WeatherProvider {
                     CurrentWeatherResponse[].class
             );
             System.out.println(data[0].toString());
+            repository.save(city, data[0].getLocalDate(), data[0].getWeatherText(), data[0].getTemperature());
 
         } else {
             HttpUrl url = new HttpUrl.Builder()
@@ -102,6 +110,8 @@ public class AccuWeatherProvider implements WeatherProvider {
                                 " ожидается " + weatherText +
                                 ", температура - " + temperature + unit
                 );
+
+                repository.save(city, item.at("/Date").asText(), weatherText, temperature);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

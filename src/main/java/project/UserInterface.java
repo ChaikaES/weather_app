@@ -17,6 +17,7 @@ public class UserInterface {
 
             System.out.println("Введите ответ: 1 - Получить текущую погоду, " +
                 "2 - Получить погоду на следующие 5 дней, " +
+                "3 - Распечатать предыдущие запросы, " +
                 "выход (exit) - завершить работу");
             String result = scanner.nextLine();
 
@@ -34,7 +35,6 @@ public class UserInterface {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
