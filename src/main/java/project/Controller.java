@@ -9,12 +9,14 @@ import java.util.Map;
 
 public class Controller {
 
-    WeatherProvider weatherProvider = new AccuWeatherProvider();
+    private final Repository repository = new Repository();
+    WeatherProvider weatherProvider = new AccuWeatherProvider(repository);
     Map<Integer, Functionality> variantResult = new HashMap();
 
     public Controller() {
         variantResult.put(1, Functionality.GET_CURRENT_WEATHER);
         variantResult.put(2, Functionality.GET_WEATHER_IN_NEXT_5_DAYS);
+        variantResult.put(3, Functionality.PRINT_LOGGED_REQUESTS);
     }
 
     public void onUserInput(String input) throws IOException {
@@ -30,6 +32,9 @@ public class Controller {
             case GET_WEATHER_IN_NEXT_5_DAYS:
                 getWeatherIn5Days();
                 break;
+            case PRINT_LOGGED_REQUESTS:
+                printLoggedRequests();
+                break;
         }
     }
 
@@ -39,5 +44,9 @@ public class Controller {
 
     public void getWeatherIn5Days() throws IOException {
         weatherProvider.getWeather(Periods.FIVE_DAYS);
-    } //TODO: Add your method here
+    }
+
+    public void printLoggedRequests() {
+        repository.printAll();
+    }
 }

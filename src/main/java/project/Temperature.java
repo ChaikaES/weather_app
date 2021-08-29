@@ -6,16 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Temperature {
     @JsonProperty(value = "Value")
-    private Float value;
+    private Double value;
 
     @JsonProperty(value = "Unit")
     private String unit;
 
-    public void setValue(Float value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
-    public Float getValue() {
+    public Double getValue() {
         return value;
     }
 
